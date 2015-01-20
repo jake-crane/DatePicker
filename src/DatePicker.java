@@ -27,6 +27,9 @@ public class DatePicker extends JPanel {
 
 	private ArrayList<ActionListener> actionListeners = new ArrayList<ActionListener>();
 
+	private int minimumYear = 1900;
+	private int maximumYear = Calendar.getInstance().get(Calendar.YEAR);
+
 	public DatePicker(Date date) {
 		this();
 		setDate(date);
@@ -62,7 +65,11 @@ public class DatePicker extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println("year start");
-				setDate(((Integer)year.getSelectedItem()).intValue(), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+				if (year.getItemCount() > 0) {
+					setDate(((Integer)year.getSelectedItem()).intValue(),
+							calendar.get(Calendar.MONTH),
+							calendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+				}
 				//System.out.println("year end: " + calendar.getTime());
 				for (ActionListener actionListener : actionListeners) {
 					actionListener.actionPerformed(e);
@@ -78,7 +85,7 @@ public class DatePicker extends JPanel {
 			month.addItem(m);
 		}
 
-		for (int i = 1900; i <= calendar.get(Calendar.YEAR); i++) {
+		for (int i = minimumYear; i <= maximumYear; i++) {
 			year.addItem(new Integer(i));
 		}
 
@@ -91,11 +98,11 @@ public class DatePicker extends JPanel {
 		add(label);
 
 		updateDisplay();
-		
+
 		day.setFocusable(false);
 		month.setFocusable(false);
 		year.setFocusable(false);
-		
+
 		day.addActionListener(dayActionListener);
 		month.addActionListener(monthActionListener);
 		year.addActionListener(yearActionListener);
@@ -190,6 +197,38 @@ public class DatePicker extends JPanel {
 
 	public void removeActionListener(ActionListener actionListener) {
 		actionListeners.remove(actionListener);
+	}
+
+	public int getMinimumYear() {
+		return minimumYear;
+	}
+
+	public void setMinimumYear(int minimumYear) {
+		this.minimumYear = minimumYear;
+		Integer selectedYear = (Integer)year.getSelectedItem();
+		year.removeAllItems();
+		for (int i = minimumYear; i <= maximumYear; i++) {
+			Integer tmpYear = new Integer(i);
+			year.addItem(tmpYear);
+			if (selectedYear.equals(tmpYear)) {
+				year.setSelectedItem(tmpYear);
+			}
+		}
+		updateDisplay();
+	}
+
+	public int getMaximumYear() {
+		return maximumYear;
+	}
+
+	//not yet working
+	public void setMaximumYear(int maximumYear) {
+		this.maximumYear = maximumYear;
+		year.removeAllItems();
+		for (int i = minimumYear; i <= maximumYear; i++) {
+			year.addItem(new Integer(i));
+		}
+		updateDisplay();
 	}
 
 }
